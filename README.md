@@ -1,0 +1,1 @@
+# Praca_Naukowa-Porownanie_Analizatorow_Statycznych
