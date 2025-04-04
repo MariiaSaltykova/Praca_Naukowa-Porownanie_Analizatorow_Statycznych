@@ -1,5 +1,5 @@
 CREATE VIEW measurementsPerMetricAndLanguage AS
-SELECT mn.metricName, lang.languageName, COUNT(*) AS amount 
+SELECT mn.metricName, lang.languageName, COUNT(*) AS amount
 FROM metricNames mn
 JOIN toolsMetricsConnections tmc
 ON tmc.metricID = mn.uniqueID
