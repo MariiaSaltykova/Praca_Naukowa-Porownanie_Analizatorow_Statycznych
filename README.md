@@ -23,12 +23,29 @@
    docker exec -i mysql-local mysql -uroot -prootpass metryki < src/sql/metryki.sql
    ```
 
-4. Inspect the database tables and sample data:
+4. Load additional views and functions:
+   ```sh
+   docker exec -i mysql-local mysql -uroot -prootpass metryki < src/sql/views.sql
+   docker exec -i mysql-local mysql -uroot -prootpass metryki < src/sql/usefulViewsAndFunctions.sql
+   docker exec -i mysql-local mysql -uroot -prootpass metryki < src/sql/consolidationMigrations.sql
+   ```
+
+5. Inspect the database tables and sample data:
    ```sh
    python scripts/db_inspector.py
    ```
 
-5. When finished, stop the database container:
+   You can also run custom SQL queries:
+   ```sh
+   python scripts/db_inspector.py --query "SELECT * FROM measurementsPerMetricAndLanguage LIMIT 10"
+   ```
+
+6. To clear the database if needed:
+   ```sh
+   docker exec -i mysql-local mysql -uroot -prootpass metryki < src/sql/clear_database.sql
+   ```
+
+7. When finished, stop the database container:
    ```sh
    docker compose -f scripts/docker-compose.yml down
    ```
