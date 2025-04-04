@@ -1,8 +1,8 @@
-UPDATE metricvalues
-SET metricvalues.path = ''
-WHERE metricvalues.path IS NULL;
+UPDATE metricValues
+SET metricValues.path = ''
+WHERE metricValues.path IS NULL;
 
-UPDATE metricvalues
-SET metricvalues.metricValue = CAST((CAST(REPLACE(metricvalues.metricValue, '%', '') AS DOUBLE) / 100) AS VARCHAR(255))
-WHERE metricvalues.metricValue IS NOT NULL AND RIGHT(metricvalues.metricValue, 1) = '%'
+UPDATE metricValues
+SET metricValues.metricValue = CONVERT(REPLACE(metricValues.metricValue, '%', '') / 100, CHAR)
+WHERE metricValues.metricValue IS NOT NULL AND RIGHT(metricValues.metricValue, 1) = '%'
 
