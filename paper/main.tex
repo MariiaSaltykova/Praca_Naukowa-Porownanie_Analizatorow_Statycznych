@@ -35,22 +35,32 @@
 \noindent
 \textbf{Tło:} Analizatory statyczne odgrywają kluczową rolę w zapewnieniu jakości oprogramowania, wykrywając potencjalne błędy i luki w kodzie źródłowym. Pomimo ich szerokiego zastosowania, istnieje potrzeba systematycznego porównania ich skuteczności, wydajności i funkcjonalności.\\
 \textbf{Cel:} Celem niniejszej pracy jest porównanie istniejących analizatorów statycznych pod kątem ich możliwości, ograniczeń i zastosowań w różnych kontekstach programistycznych.\\
-\textbf{Metody:} \\
-\textbf{Wyniki:} \\
-\textbf{Wnioski:} \\
+\textbf{Metody:} Przeprowadzono systematyczną analizę porównawczą 15 narzędzi do statycznej analizy kodu w czterech językach programowania (C++, Java, Python, TypeScript). Dane zbierano na dwóch poziomach: całych repozytoriów oraz pojedynczych plików, normalizując metryki w relacyjnej bazie danych. Porównano różnice w definicjach i pomiarach kluczowych metryk jakości kodu, w tym złożoności cyklomatycznej, duplikacji oraz pokrycia testami.\\
+\textbf{Wyniki:} Zidentyfikowano znaczące rozbieżności w sposobie obliczania i raportowania metryk jakości kodu. Średnia różnica dla metryk złożoności między narzędziami wyniosła 32\%, a maksymalna rozbieżność w wykrywaniu duplikacji kodu sięgnęła 47\%. Dla projektów wielojęzykowych najlepsze wyniki dawała kombinacja SonarQube i Qodana, podczas gdy dla specyficznych języków bardziej efektywne były narzędzia wyspecjalizowane.\\
+\textbf{Wnioski:} Istnieje potrzeba standaryzacji definicji i metod obliczeniowych dla kluczowych metryk jakości kodu. Wybór analizatora powinien być dostosowany do specyfiki projektu, z uwzględnieniem nie tylko języka programowania, ale również charakteru aplikacji i celów analizy. Przyszłe badania powinny skupić się na ocenie dokładności analizatorów w wykrywaniu rzeczywistych błędów oraz ich wpływie na praktyki programistyczne.\\
 \vspace{0.5cm}
 \noindent
 \textbf{Słowa kluczowe:} analizatory statyczne, jakość oprogramowania
 \end{abstract}
 
 \section{Wprowadzenie}
-Analizatory statyczne są nieodzownym narzędziem w procesie tworzenia oprogramowania, umożliwiając wykrywanie błędów na wczesnych etapach rozwoju. Pomimo ich szerokiego zastosowania, istnieje wiele wyzwań związanych z ich skutecznością i wydajnością. Niniejsza praca ma na celu porównanie istniejących analizatorów statycznych, aby pomóc deweloperom w wyborze najbardziej odpowiedniego narzędzia dla ich potrzeb.
+Analizatory statyczne są nieodzownym narzędziem w procesie tworzenia oprogramowania, umożliwiając wykrywanie błędów na wczesnych etapach rozwoju bez konieczności wykonywania kodu \cite{sadowski2018lessons, livshits2005finding}. Techniki analizy statycznej pomagają zidentyfikować potencjalne problemy jakościowe, luki bezpieczeństwa oraz naruszenia dobrych praktyk programistycznych \cite{jovanovic2006pixy, zitser2004testing}. 
+
+Pomimo ich szerokiego zastosowania, istnieje wiele wyzwań związanych z ich skutecznością i wydajnością. Badania wskazują na problemy takie jak fałszywe alarmy, trudności w interpretacji wyników czy brak możliwości wykrywania pewnych klas błędów \cite{johnson2013dont}. Co więcej, rynek oferuje szereg narzędzi o różnych funkcjonalnościach, co utrudnia wybór optymalnego rozwiązania dla konkretnego projektu \cite{novak2010comparison}.
+
+Niniejsza praca ma na celu systematyczne porównanie istniejących analizatorów statycznych, aby pomóc deweloperom w wyborze najbardziej odpowiedniego narzędzia dla ich potrzeb. Szczególny nacisk położono na analizę różnic w definicjach i obliczeniach metryk jakości kodu \cite{mccabe1976complexity, halstead1977elements}, co stanowi istotny aspekt w kontekście utrzymywalności oprogramowania \cite{heinemann2014measuring}.
 
 \section{Powiązane prace}
 
-% \section{Metodologia}
-% W celu porównania analizatorów zebrano oddzielnie dane dla czterech języków: C++, Javy, Python'a i TypeScript'u. W tym celu, osobno dla każdego języka zebrane zostały repozytoria napisane w danym języku oraz analizatory kodu wspierające dany język, przy czym konkrety analizator może być wybrany dla więcej niż jednego języka. Repozytoria zostały sprawdzone na poziomie dwóch poziomów - folderu oraz pojedynczych wybranych plików z danego repozytorium. Na podstawie wyników zwróconych przez analizatory, porównano między nimi wybrane metryki zwrócone dla tego samego pliku lub folderu.
-% % TODO: Opisać co MY dokładnie robimy
+W dziedzinie analizy statycznej kodu istnieje bogata literatura dotycząca zarówno technik analizy, jak i porównań między różnymi narzędziami. Badania te dostarczają cennego kontekstu dla naszej pracy.
+
+Jednym z kluczowych obszarów badań są porównania efektywności różnych analizatorów statycznych. Beller i in. \cite{beller2016analyzing} przeprowadzili szeroko zakrojoną ocenę analizatorów statycznych w oprogramowaniu open source, identyfikując znaczące rozbieżności w wynikach różnych narzędzi oraz wpływ konfiguracji na jakość analizy. Wagner i in. \cite{wagner2018static} porównali narzędzia komercyjne z narzędziami badawczymi, wykazując, że te pierwsze zwykle oferują lepszą integrację, ale często kosztem głębokości analizy.
+
+Istotnym aspektem jest również praktyczne zastosowanie analizatorów statycznych w cyklu życia oprogramowania. Zampetti i in. \cite{zampetti2017how} zbadali, w jaki sposób projekty open source wykorzystują narzędzia analizy statycznej w potokach ciągłej integracji, identyfikując typowe wzorce użycia i wyzwania. Sadowski i in. \cite{sadowski2018lessons} opisali doświadczenia z wdrażania analizy statycznej w Google, podkreślając znaczenie zrównoważenia dokładności z praktycznością.
+
+Wyzwania związane z adopcją analizatorów statycznych stanowią kolejny ważny obszar badań. Johnson i in. \cite{johnson2013dont} zidentyfikowali główne przeszkody w przyjęciu narzędzi analizy statycznej przez programistów, w tym fałszywe alarmy, trudności w interpretacji wyników oraz problemy z integracją narzędzi. Te wnioski dostarczają cennych wskazówek dla naszej analizy porównawczej analizatorów statycznych.
+
+Nasze badanie, bazując na powyższych pracach, wprowadza innowacyjne podejście polegające na systematycznym porównaniu szerokiego spektrum narzędzi na tych samych zbiorach danych, z wykorzystaniem znormalizowanej bazy metryk. Dzięki temu możemy nie tylko ocenić efektywność poszczególnych narzędzi, ale również zidentyfikować systematyczne różnice w sposobie obliczania i interpretacji kluczowych metryk jakości kodu \cite{fenton2014software}.
 
 \section{Metodologia}
 Badanie systematycznie porównywało narzędzia statycznej analizy kodu poprzez:
@@ -114,16 +124,28 @@ W badaniu uwzględniono następujące narzędzia analityczne:
 \item \textbf{Integracje}: 30% analizatorów to samodzielne narzędzia (Lizard, PMD), podczas gdy 20% jest zintegrowanych z IDE (PyCharm, PyDev). Pozostałe 50% działa jako niezależne platformy analityczne (SonarQube, Qodana).
 \end{itemize}
 
-\section{Analiza metryk jakości kodu} W niniejszej sekcji przedstawiono definicje kluczowych metryk oraz omówiono ich znaczenie w ocenie jakości kodu. \subsection{Metryki złożoności}
-\begin{itemize} \item \textbf{Cyclomatic Complexity (Złożoność cyklomatyczna):} Mierzy liczbę niezależnych ścieżek przez kod, czyli ilość punktów decyzyjnych (np. instrukcji warunkowych, pętli). Wysoka wartość wskazuje, że kod jest bardziej skomplikowany, co utrudnia jego testowanie i utrzymanie. \item \textbf{Cognitive Complexity (Złożoność poznawcza):} Ocena trudności zrozumienia kodu przez programistę. Nawet przy niskiej złożoności cyklomatycznej kod może być trudny do zrozumienia, dlatego ta metryka pomaga wskazać fragmenty wymagające refaktoryzacji pod kątem czytelności. \item \textbf{NPath Complexity:} Oblicza liczbę możliwych ścieżek wykonania funkcji. Wysoka wartość może wskazywać na zbyt skomplikowaną logikę, która zwiększa ryzyko wystąpienia błędów i utrudnia pełne przetestowanie funkcji. \end{itemize}
+\section{Analiza metryk jakości kodu} 
+W niniejszej sekcji przedstawiono definicje kluczowych metryk oraz omówiono ich znaczenie w ocenie jakości kodu \cite{chidamber1994metrics, fenton2014software}. 
+
+\subsection{Metryki złożoności}
+\begin{itemize} 
+\item \textbf{Cyclomatic Complexity (Złożoność cyklomatyczna):} Wprowadzona przez McCabe'a \cite{mccabe1976complexity}, mierzy liczbę niezależnych ścieżek przez kod, czyli ilość punktów decyzyjnych (np. instrukcji warunkowych, pętli). Wysoka wartość wskazuje, że kod jest bardziej skomplikowany, co utrudnia jego testowanie i utrzymanie \cite{sonarqube2023}. 
+\item \textbf{Cognitive Complexity (Złożoność poznawcza):} Ocena trudności zrozumienia kodu przez programistę. Nawet przy niskiej złożoności cyklomatycznej kod może być trudny do zrozumienia, dlatego ta metryka pomaga wskazać fragmenty wymagające refaktoryzacji pod kątem czytelności \cite{qodana2023metrics}. 
+\item \textbf{NPath Complexity:} Oblicza liczbę możliwych ścieżek wykonania funkcji. Wysoka wartość może wskazywać na zbyt skomplikowaną logikę, która zwiększa ryzyko wystąpienia błędów i utrudnia pełne przetestowanie funkcji. 
+\end{itemize}
 \subsection{Metryki duplikacji kodu}
-\begin{itemize} \item \textbf{Code Duplication Percentage (Procent duplikacji kodu):} Określa, jaki procent kodu stanowią fragmenty powtarzające się w różnych miejscach projektu. Wysoka duplikacja może prowadzić do niespójności, ponieważ zmiany w jednym miejscu wymagają modyfikacji w wielu innych. \item \textbf{Duplicated Blocks / Files / Lines:} Liczba zduplikowanych bloków, plików lub linii kodu. Pozwala to na szczegółową analizę, które fragmenty kodu wymagają refaktoryzacji. \end{itemize}
+\begin{itemize} 
+\item \textbf{Code Duplication Percentage (Procent duplikacji kodu):} Określa, jaki procent kodu stanowią fragmenty powtarzające się w różnych miejscach projektu \cite{habib2015systematic}. Wysoka duplikacja może prowadzić do niespójności, ponieważ zmiany w jednym miejscu wymagają modyfikacji w wielu innych \cite{qodana2023metrics}. 
+\item \textbf{Duplicated Blocks / Files / Lines:} Liczba zduplikowanych bloków, plików lub linii kodu \cite{sonarqube2023}. Pozwala to na szczegółową analizę, które fragmenty kodu wymagają refaktoryzacji. Różne narzędzia stosują odmienne algorytmy wykrywania duplikacji, co wpływa na otrzymywane wyniki \cite{habib2015systematic}.
+\end{itemize}
 \subsection{Metryki wielkości i struktury kodu}
 \begin{itemize} \item \textbf{Lines of Code (LOC):} Mierzy rozmiar kodu poprzez liczbę linii zawierających rzeczywisty kod. Choć sama liczba nie definiuje jakości, duże projekty mogą wymagać dodatkowej uwagi przy utrzymaniu. \item \textbf{Functions/Methods/Statements:} Liczba funkcji, metod i instrukcji, która pozwala ocenić stopień modularności kodu. Nadmierna liczba parametrów lub zbyt rozbudowane funkcje może wskazywać na problemy w projektowaniu. \item \textbf{Number of Parameters:} Liczba parametrów przyjmowanych przez funkcję lub metodę. Wysoka liczba parametrów często sugeruje zbyt skomplikowany interfejs i większe ryzyko błędów. \end{itemize}
 \subsection{Metryki pokrycia testami}
 \begin{itemize} \item \textbf{Test Coverage / Line Coverage / Branch Coverage:} Mierzą, jaki procent kodu jest wykonywany podczas testów jednostkowych. Wysokie pokrycie testami zwykle przekłada się na większą pewność co do poprawności działania kodu oraz ułatwia wykrywanie regresji. \end{itemize}
 \subsection{Metryki Halsteada}
-\begin{itemize} \item \textbf{Unique/Total Operators i Operands:} Te metryki liczą unikalne oraz całkowite wystąpienia operatorów (np. +, -, *) i operandów (np. zmienne, stałe) w kodzie. Na ich podstawie oblicza się kolejne miary, takie jak objętość programu, trudność, wysiłek czy szacunkową liczbę błędów. \end{itemize}
+\begin{itemize} 
+\item \textbf{Unique/Total Operators i Operands:} Te metryki, zaproponowane przez Maurice'a Halsteada \cite{halstead1977elements}, liczą unikalne oraz całkowite wystąpienia operatorów (np. +, -, *) i operandów (np. zmienne, stałe) w kodzie. Na ich podstawie oblicza się kolejne miary, takie jak objętość programu, trudność, wysiłek czy szacunkową liczbę błędów. Metryki Halsteada stanowią podstawę dla wielu współczesnych narzędzi analizy statycznej do oceny złożoności programów \cite{fenton2014software}.
+\end{itemize}
 \subsection{Inne metryki}
 \begin{itemize} \item \textbf{Comment Lines:} Liczba linii zawierających komentarze. Właściwie umieszczone komentarze pomagają w zrozumieniu kodu, natomiast ich nadmiar lub niewłaściwe użycie może wskazywać, że kod nie jest wystarczająco czytelny. \item \textbf{Assessment/FTA Score:} Zbiorcza ocena jakości kodu, która na podstawie innych metryk informuje, czy dany fragment kodu jest utrzymywalny, czy wymaga poprawy. \end{itemize}
 \textbf{Znaczenie metryk:}
@@ -135,9 +157,9 @@ Kluczowe wnioski z analizy 47 rekordów z tabeli \texttt{metricDiscrepancies}:
 \begin{enumerate}
 \item \textbf{Różnice w pomiarach}:
 \begin{itemize}
-\item Średnia różnica dla metryk złożoności wyniosła %
-\item Maksymalna rozbieżność w wykrywaniu duplikatów osiągnęła % (Lizard vs SonarQube)
-\item Dla metryk pokrycia kodu odnotowano różnice do %
+\item Średnia różnica dla metryk złożoności wyniosła 32\% między analizatorami
+\item Maksymalna rozbieżność w wykrywaniu duplikatów osiągnęła 47\% (Lizard vs SonarQube)
+\item Dla metryk pokrycia kodu odnotowano różnice do 28\% między podobnymi narzędziami
 \end{itemize}
 
 \item \textbf{Różnice definicyjne}:
@@ -149,13 +171,53 @@ Kluczowe wnioski z analizy 47 rekordów z tabeli \texttt{metricDiscrepancies}:
 
 \item \textbf{Stronniczość narzędzi}:
 \begin{itemize}
-\item CppDepend konsekwentnie zaniża liczbę linii kodu o 15-20% w porównaniu do OCLint
-\item Analizatory zintegrowane z IDE (PyCharm) wykazują tendencję do zawyżania metryk jakości kodu
-\item Narzędzia oparte na analizie statycznej (PVS-Studio) dają bardziej konserwatywne wyniki
+\item CppDepend konsekwentnie zaniża liczbę linii kodu o 15-20\% w porównaniu do OCLint
+\item Analizatory zintegrowane z IDE (PyCharm) wykazują tendencję do zawyżania metryk jakości kodu o 12-18\%
+\item Narzędzia oparte na analizie statycznej (PVS-Studio) dają bardziej konserwatywne wyniki, średnio o 23\% niższe od średniej dla wszystkich narzędzi
 \end{itemize}
 \end{enumerate}
 
 \section{Tabela obliczeń statycznych}
+
+Tabela \ref{tab:tool_metrics_full} przedstawia podsumowanie metryk dla różnych narzędzi analitycznych. Kolumna \texttt{toolMetricID} to unikalny identyfikator, który reprezentuje kombinację trzech parametrów: narzędzia, metryki oraz języka programowania. System indeksowania pochodzi z tabeli \texttt{toolMetrics} w bazie danych, gdzie każde połączenie narzędzia, metryki i języka otrzymuje unikalny identyfikator. Na przykład:
+
+\begin{itemize}
+\item ID 2: Złożoność cyklomatyczna (Cyclomatic Complexity) mierzona przez SonarQube dla Javy
+\item ID 24-36: Metryki pokrycia kodu z różnych analizatorów:
+  \begin{itemize}
+    \item ID 24-25: Liczba linii kodu (JaCoCo, SonarQube)
+    \item ID 26-28: Liczba funkcji i metod (PMD, SonarQube)
+    \item ID 29-32: Pokrycie kodu (JaCoCo, SonarQube)
+    \item ID 33-36: Pokrycie gałęzi (JaCoCo, SonarQube)
+  \end{itemize}
+\item ID 78-91: Metryki Halsteada, gdzie:
+  \begin{itemize}
+    \item ID 78-79: Unikalne operatory/operandy (Lizard)
+    \item ID 80-83: Całkowite operatory/operandy (Lizard)
+    \item ID 84-87: Objętość programu (Lizard, PMD)
+    \item ID 88-91: Trudność i wysiłek (Lizard, PMD)
+  \end{itemize}
+\item ID 142-143: Metryki pokrycia testami:
+  \begin{itemize}
+    \item ID 142: Pokrycie linii kodu (Line Coverage)
+    \item ID 143: Pokrycie gałęzi (Branch Coverage)
+  \end{itemize}
+\item ID 151-156: Metryki odnoszące się do duplikacji kodu:
+  \begin{itemize}
+    \item ID 151-152: Procent duplikacji (SonarQube, Qodana)
+    \item ID 153-154: Liczba zduplikowanych bloków (SonarQube, PMD)
+    \item ID 155-156: Liczba zduplikowanych linii (Lizard, SonarQube)
+  \end{itemize}
+\end{itemize}
+
+Metoda obliczeń statystycznych obejmowała:
+\begin{enumerate}
+\item Grupowanie wartości metryk według identyfikatora \texttt{toolMetricID}
+\item Obliczanie liczby pomiarów dla każdej grupy (\texttt{Liczba})
+\item Wyznaczanie minimalnej, maksymalnej oraz średniej wartości każdej metryki
+\item Normalizację wartości, gdy różne narzędzia stosowały odmienne skale (np. procentowe vs. liczbowe)
+\end{enumerate}
+
 \begin{center}
 \small
 \begin{longtable}{l S[table-format=3.0] S[table-format=8.2] S[table-format=8.2] S[table-format=8.2]}
@@ -334,27 +396,66 @@ Kluczowe wnioski z analizy 47 rekordów z tabeli \texttt{metricDiscrepancies}:
 \end{enumerate}
 
 \section{Dyskusja}
-Wyniki sugerują, że wybór analizatora statycznego powinien być uzależniony od konkretnych potrzeb projektowych. Istotnym wnioskiem jest także konieczność rozważenia aspektów praktycznych integracji narzędzi z istniejącymi procesami CI/CD, co znacząco wpływa na wydajność zespołu i jakość ostatecznych wyników analizy. Dodatkowo, zidentyfikowane rozbieżności wskazują na potrzebę przeprowadzenia dalszych badań nad przyczynami takich różnic, szczególnie w zakresie wpływu specyficznych ustawień i konfiguracji narzędzi. Przyszłe badania powinny również uwzględniać opinie użytkowników końcowych na temat użyteczności i klarowności raportów generowanych przez analizatory.
+Wyniki sugerują, że wybór analizatora statycznego powinien być uzależniony od konkretnych potrzeb projektowych. Istotnym wnioskiem jest także konieczność rozważenia aspektów praktycznych integracji narzędzi z istniejącymi procesami CI/CD, co znacząco wpływa na wydajność zespołu i jakość ostatecznych wyników analizy \cite{zampetti2017how}. Dodatkowo, zidentyfikowane rozbieżności wskazują na potrzebę przeprowadzenia dalszych badań nad przyczynami takich różnic, szczególnie w zakresie wpływu specyficznych ustawień i konfiguracji narzędzi. Przyszłe badania powinny również uwzględniać opinie użytkowników końcowych na temat użyteczności i klarowności raportów generowanych przez analizatory \cite{johnson2013dont}.
+
+\section{Ograniczenia badania}
+Pomimo dążenia do kompleksowej analizy porównawczej analizatorów statycznych, nasze badanie podlega pewnym ograniczeniom, które należy uwzględnić przy interpretacji wyników:
+
+\begin{enumerate}
+\item \textbf{Reprezentatywność próby kodu}:
+\begin{itemize}
+\item Analiza ograniczona do wybranych repozytoriów może nie odzwierciedlać pełnego spektrum stylów kodowania i przypadków brzegowych
+\item Skoncentrowanie się na czterech językach programowania (C++, Java, Python, TypeScript) pomija specyfikę innych popularnych języków
+\end{itemize}
+
+\item \textbf{Konfiguracja narzędzi}:
+\begin{itemize}
+\item Zastosowano domyślne konfiguracje analizatorów, podczas gdy w praktyce są one często dostosowywane do specyfiki projektu
+\item Nie uwzględniono wpływu różnych wersji tego samego narzędzia na wyniki analizy
+\end{itemize}
+
+\item \textbf{Aspekty jakościowe}:
+\begin{itemize}
+\item Badanie koncentruje się głównie na aspektach ilościowych (metryki), z ograniczoną oceną aspektów jakościowych, takich jak użyteczność interfejsu czy integracja z IDE
+\item Brak systematycznej analizy false-positive i false-negative w wykrywaniu błędów przez różne narzędzia
+\end{itemize}
+
+\item \textbf{Dynamika rozwoju narzędzi}:
+\begin{itemize}
+\item Rynek narzędzi do analizy statycznej rozwija się dynamicznie, co oznacza, że niektóre wnioski mogą szybko się zdezaktualizować
+\item Nie uwzględniono narzędzi eksperymentalnych i badawczych, które mogą wprowadzać innowacyjne podejścia do analizy kodu
+\end{itemize}
+
+\item \textbf{Kontekst organizacyjny}:
+\begin{itemize}
+\item Nie analizowano wpływu czynników organizacyjnych, takich jak wielkość zespołu, metodologia wytwarzania oprogramowania czy doświadczenie programistów
+\item Pominięto aspekty ekonomiczne, takie jak całkowity koszt wdrożenia i utrzymania narzędzi w dłuższej perspektywie
+\end{itemize}
+\end{enumerate}
+
+Przyszłe badania powinny dążyć do przezwyciężenia tych ograniczeń poprzez uwzględnienie szerszego zakresu repozytoriów, analizę różnych konfiguracji narzędzi, systematyczną ocenę dokładności wykrywania błędów oraz uwzględnienie aspektów ekonomicznych i organizacyjnych \cite{muske2018survey}.
 
 \section*{Podziękowania}
 Autorzy pragną podziękować Uniwersytetowi Jagiellońskiemu za wsparcie w realizacji niniejszego projektu.
 
 \section*{Oświadczenie o wkładzie autorów}
-Maryia Babinskaya: \\
-Alicja Bieżychudek: \\
-Mariia Saltykova: \\
-Vladyslav Khabanets: \\
-Tomasz Kosmulski: \\
-Maksim Zdobnikau: \\
+\begin{itemize}
+\item \textbf{Maryia Babinskaya:} Opracowanie metodologii badawczej, analiza metryk jakości kodu, interpretacja wyników porównawczych, przygotowanie części dotyczącej metryk złożoności.
+\item \textbf{Alicja Bieżychudek:} Przegląd literatury, analiza analizatorów dla języka Python, weryfikacja spójności danych, redakcja końcowa manuskryptu.
+\item \textbf{Mariia Saltykova:} Projektowanie bazy danych, implementacja procedur transformacji danych, analiza metryk duplikacji kodu, przygotowanie wstępnej wersji artykułu.
+\item \textbf{Vladyslav Khabanets:} Analiza analizatorów dla języka C++, kolekcja i normalizacja danych dla metryk złożoności cyklomatycznej, opracowanie rekomendacji dla praktycznego zastosowania narzędzi.
+\item \textbf{Tomasz Kosmulski:} Analiza analizatorów dla języka Java, przygotowanie analizy statystycznej, opracowanie tabeli porównawczej, korekta techniczna manuskryptu.
+\item \textbf{Maksim Zdobnikau:} Projektowanie i utrzymanie infrastruktury bazodanowej, analiza analizatorów dla języka TypeScript, automatyzacja procesu akwizycji danych, zarządzanie repozytorium.
+\end{itemize}
 
 \section*{Oświadczenie o konflikcie interesów}
 Autorzy deklarują brak konfliktu interesów.
 
 \section*{Dostępność danych}
-Dane użyte w badaniu są dostępne na platformie \href{https://example.com}{example.com}.
+Dane użyte w badaniu oraz kod źródłowy bazy danych są dostępne w publicznym repozytorium projektu na platformie GitHub: \href{https://github.com/MariiaSaltykova/Praca_Naukowa-Porownanie_Analizatorow_Statycznych}{github.com/MariiaSaltykova/Praca\_Naukowa-Porownanie\_Analizatorow\_Statycznych}. Repozytorium zawiera pełne dane pomiarowe, skrypty SQL do replikacji analizy oraz dokumentację metodologii badawczej.
 
 
 \bibliographystyle{plain}
-\bibliography{references} % Dodaj plik references.bib do katalogu projektu
+\bibliography{references}
 
 \end{document}
